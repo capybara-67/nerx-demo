@@ -12,7 +12,8 @@ private struct DemoOffer: Identifiable {
 struct ContentView: View {
     @State private var query = ""
     @State private var showSaved = false
-    @State private var saved: Set<Int> = []
+    @AppStorage("saved-offer-ids") private var savedData = Data()
+    private var saved: Set<Int> { BookmarkCodec.decode(savedData) }
     @State private var selected: DemoOffer?
     private let accent = Color(red: 0.65, green: 0.48, blue: 1)
     private let offers = [
@@ -52,8 +53,7 @@ struct ContentView: View {
                                 Text(offer.category.uppercased()).font(.caption.bold()).foregroundStyle(accent)
                                 Spacer()
                                 Button {
-                                    if saved.contains(offer.id) { saved.remove(offer.id) }
-                                    else { saved.insert(offer.id) }
+                                    savedData = BookmarkCodec.toggling(offer.id, in: savedData)
                                 } label: {
                                     Image(systemName: saved.contains(offer.id) ? "bookmark.fill" : "bookmark")
                                         .padding(8)
